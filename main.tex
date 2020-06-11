@@ -1,0 +1,38 @@
+\documentclass{report}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, margin=5em]{geometry}
+\usepackage{blindtext}
+\usepackage[ruled, vlined]{algorithm2e}
+\usepackage{amsmath, amsfonts, amssymb, amsbsy, bm}
+
+\title{Machine Learning Notes}
+\author{Sebastian Gaume}
+
+\setlength{\parindent}{0pt}
+
+% Format as vector
+\renewcommand{\vec}[1]{\bm{#1}}
+% Format as vector transposed
+\newcommand{\vect}[1]{\bm{#1}^{\intercal}}
+% Format as training example vector
+\newcommand{\vecex}[2]{\bm{#1}^{(#2)}}
+\newcommand{\transpose}{^{\intercal}}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\chapter{Algorithms}
+
+\input{algorithms.tex}
+
+\chapter{Linear Regression}
+
+\input{linearRegression.tex}
+
+\chapter{Logistic Regression}
+
+\input{logisticRegression.tex}
+
+\end{document}

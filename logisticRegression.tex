@@ -1,0 +1,78 @@
+Logisitic regression models are used in binary classification problems, altough they can be extended to multi-class classification problems.
+In these problems, $\vecex{y}{i} \in \{0, 1\}$, where $0$ represents the negative case and $1$ represents the positive case, though these can then
+represent any given classes. Our goal is to predict, based on features $\vecex{x}{i}$, which class a datum is part of. For this model, the output of
+the hypothesis function is $P(\vecex{y}{i} = 1 | \vecex{x}{i}, \vec{\theta})$.
+
+\section{Hypothesis and Cost Function}
+
+In a logisitic regression model, our hypotheis is of the form
+\begin{align}
+    h_{\theta}(\vec{x}) &= g(\vect{\theta}\vec{x}), \quad  h_{\theta}(\vec{x}) \in \mathbb{R} \\
+    g(\vec{z}) &= \frac{1}{1 + e^{-\vec{z}}}
+\end{align}
+or equivalently
+\begin{equation}
+    \vec{h_{\theta}}(\vec{X}) = g(\vec{X\theta}), \quad \vec{h_{\theta}}(\vec{X}) \in \mathbb{R}^{m}
+\end{equation}
+as this ensures our hypothesis is between $0$ and $1$ for all possible inputs. We then use a cost logarithmic cost function
+which rewards $h_{\theta}(\vecex{x}{i})$ for being closer to $\vecex{y}{i}$ than the other possible value of $\vecex{y}{i}$ as
+it can only hold the values of $0$ and $1$. This cost function is
+\begin{align}
+    J(\vec{\theta}) &= -\frac{1}{m}\sum_{i=1}^{m}\left[\vecex{y}{i}\log{\left(h_{\theta}(\vecex{x}{i})\right)} + \left(1-\vecex{y}{i}\right)\log{\left(1-h_{\theta}(\vecex{x}{i})\right)}\right] \\
+    &= \frac{1}{m} \left(-\vect{y}\log{\left(g(\vec{X\theta})\right)} - (\vec{1} - \vec{y})^{\intercal}\log{\left(\vec{1} - g(\vec{X\theta})\right)}\right)
+\end{align}
+and it is, like that of linear regression, convex. This means we can be sure gradient descent will always converge to the global optimum when used to minimise
+the function.
+
+\section{Decision Boundaries}
+
+Because the output of the hypothesis function gives us $P(\vecex{y}{i} = 1 | \vecex{x}{i}, \vec{\theta})$, we should predict that $\vecex{y}{i} = 1 \iff h_{\theta}(\vecex{x}{i}) >= 0.5$. This means that if
+we want to visualise what our model will predict the class of a given datum is is to plot the decision boundary of the hypothesis function given the optimised $\vec{\theta}$. This decision boundary is given by
+\begin{equation}
+    h_{\theta}(\vec{x}) = 0.5
+\end{equation}
+or equivalently
+\begin{equation}
+    \vect{\theta}\vec{x} = 0
+\end{equation}
+and it is the boundary that separates the regions where the model will predict $\vec{y}$ is $1$ and where it will predict $\vec{y}$ is $0$. For a small enough number of features this can be plotted
+and interpreted by a human to help give insight into what the model is doing.
+
+\section{Multi-Class Problems}
+
+We can also use logistic regression in problems where there are more than $2$ classes. To do this, we use a `one-vs-all' approach, whereby if we have $n$ different classes, we train
+$n$ different classifiers, one for each class. We then have $n$ different hypotheses, $h^{(i)}_{\theta}(\vec{x})$ which correspond to the classes $i \in \{1, 2, 3, \cdots, n\}$. We train them such that
+$h^{(i)}_{\theta}(\vec{x})$ is a binary classifier using a logistic regression modifier with the positive case being that $\vec{x}$ is a member of class $i$ and the negative case being that $\vec{x}$ is a member
+of any other class. As such, to find the class $\vec{x}$ is most likely to be a part of, we just compare the values of all the different $h^{(i)}_{\theta}(\vec{x})$, and see which is highest. If $h^{(j)}_{\theta}(\vec{x})$ outputs the highest
+value, we predict that $\vec{x}$ is a member of class $j$.
+
+\section{Gradient Descent}
+To fit our logistic regression model, we need to use an optimisation algorithm such as gradient descent. It is worth noting that their are other algorithms which do
+the same thing faster, however their implementations are best left to those who specialise in numerical methods, however they only require the cost function and its
+gradient to be written by the user, so we only need to know the same things as we do for gradient descent. For logistic regression, the gradient of the cost function
+turns out to be the same as that of linear regression's cost function, except the hypothesis function is switched out, ie
+\begin{align}
+    \vec{\nabla}_j J(\vec{\theta}) &= \frac{1}{m} \sum_{i=1}^{m}\left[(h_{\theta}(\vecex{x}{i})-\vecex{y}{i})\cdot\vecex{x}{i}_j\right] \\
+    \vec{\nabla} J(\vec{\theta}) &= \frac{1}{m} \vect{X}(g(\vec{X\theta}) - \vec{y}).
+\end{align}
+
+\section{Regularised Logistic Regression}
+Like with linear regression, we can include higher order features in our model to get a better fit model, however this can cause our model to overfit the training data. To
+solve this, we can once again use regularisation to penalise higher values for the weights of our parameters, to discourage over-fitting. For logisitic regression, this makes
+the cost function
+\begin{equation}
+    J(\vec{\theta}) = \frac{1}{m} \left(-\vect{y}\log{\left(g(\vec{X\theta})\right)} - (\vec{1} - \vec{y})^{\intercal}\log{\left(\vec{1} - g(\vec{X\theta})\right)}\right)
+        + \frac{\lambda}{2m} \sum_{j=1}^{n} \theta_j^2.
+\end{equation}
+
+\subsection{Gradient Descent for Regularised Logistic Regression}
+
+To use gradient descent, or other similar optimisation algorithms, for regularised logistic regression, we need to find the gradient of our new cost function, which
+turns our to be
+\begin{align}
+    \vec{\nabla}_0 J(\vec{\theta}) &= \frac{1}{m} \sum_{i=1}^{m}\left[(h_{\theta}(\vecex{x}{i})-\vecex{y}{i})\right] \\
+    \vec{\nabla}_j J(\vec{\theta}) &= \frac{1}{m} \sum_{i=1}^{m}\left[(h_{\theta}(\vecex{x}{i})-\vecex{y}{i})\cdot\vecex{x}{i}_j\right] + \frac{\lambda}{m}\vec{\theta}_j \quad\quad \textrm{for } j \ne 0 \\
+    \vec{\nabla} J(\vec{\theta}) &= \frac{1}{m} \vect{X}(g(\vec{X\theta}) - \vec{y}) + \frac{\lambda}{m}\begin{bmatrix}
+        0 \\ \vec{\theta}_1 \\ \vec{\theta}_2 \\ \vdots \\ \vec{\theta}_n
+    \end{bmatrix}.
+\end{align}

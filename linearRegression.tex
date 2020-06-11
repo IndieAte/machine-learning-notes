@@ -1,0 +1,76 @@
+Linear regression models are used in regression problems of an arbitrary number of features and with features which can be functions of other features.
+In these problems, $\vecex{y}{i} \in \mathbb{R}$ and can represent any quantity. Our goal is to predict, based on features $\vecex{x}{i}$, what output value
+a datum corresponds to. For this model, the output of the hypothesis function is the predicted value of $\vecex{y}{i}$ given $\vecex{x}{i}$, parameterised by
+$\vec{\theta}$.
+
+\section{Hypothesis and Cost Function}
+
+In a linear regression model, our hypothesis is of the form
+\begin{equation}
+    h_{\theta}(\vec{x}) = \vect{\theta}\vec{x},\quad h_{\theta}(\vec{x}) \in \mathbb{R}
+\end{equation}
+or alternatively,
+\begin{equation}
+    \vec{h_{\theta}}(\vec{X}) = \vec{X}\vec{\theta},\quad \vec{h_{\theta}}(\vec{X}) \in \mathbb{R}^m
+\end{equation}
+and we use a mean square difference cost function of the form
+\begin{equation}
+    J(\vec{\theta}) = \frac{1}{2m} \sum_{i = 1}^{m} \left[ (h_{\theta}(\vecex{x}{i}) - \vecex{y}{i})^2 \right] = \frac{1}{2m}(\vec{X}\vec{\theta} - \vec{y})\transpose(\vec{X}\vec{\theta} - \vec{y}).
+\end{equation}
+
+\section{The Normal Equation}
+
+One way to minimise the cost function in linear regression is to do so analytically using the normal equation. This says that
+\begin{equation}
+    \vec{\theta} = (\vect{X}\vec{X})^{-1}\vect{X}\vec{y}
+\end{equation}
+gives us the $\vec{\theta}$ that minimises the cost function $J(\vec{\theta})$. This technique is useful up until $n >= 10^{4}$, as for these relatively low numbers of features
+it is more efficient than gradient descent and doesn't require us to choose a learning rate $\alpha$.
+
+\section{Gradient Descent}
+
+We can also minimise the cost function using gradient descent. To do this, we need the gradient of $J(\vec{\theta})$ which is
+\begin{align}
+    \vec{\nabla}_j J(\vec{\theta}) &= \frac{1}{m} \sum_{i=1}^{m}\left[(h_{\theta}(\vecex{x}{i})-\vecex{y}{i})\cdot\vecex{x}{i}_j\right] \\
+    \vec{\nabla} J(\vec{\theta}) &= \frac{1}{m} \vect{X}(\vec{X\theta} - \vec{y})
+\end{align}
+and so we can just use this in our gradient descent algorithm and it will optimise $\vec{\theta}$. Note that all linear regression hypotheses are convex and so gradient descent
+will always converge with a correct learning rate and enough iterations to the global optimum.
+
+\section{Regularised Linear Regression}
+
+To avoid overfitting our training data by adding higher order terms to our hypothesis, we can use regularisation, which penalises larger weights for each term
+causing the algorithm to prefer lower valued weights and thus reducing the problem of overfitting. To do this, we need to change our cost function to
+\begin{equation}
+    J(\vec{\theta}) = \frac{1}{2m}(\vec{X}\vec{\theta} - \vec{y})\transpose(\vec{X}\vec{\theta} - \vec{y}) + \frac{\lambda}{2m} \sum_{j=1}^{n}\theta_j^2.
+\end{equation}
+The extra term penalises higher values of $\theta_j$ for all of $\vec{\theta}$ except $\theta_0$ by convention. It also introduces a new hyper-parameter $\lambda$
+which controls how much the algorithm penalises the higher values. In general, we want $\lambda>=1$ but not too large as if it's too large it will cause the model
+to underfit the training data.
+
+\subsection{The Normal Equation for Regularised Linear Regression}
+To minimise our new cost function for regularised linear regression, we have the same two options as before, but we need to modify them slightly. For the normal equation,
+this means we instead find that
+\begin{equation}
+    \vec{\theta} = \left( \vect{X}\vec{X} + \lambda \begin{bmatrix}
+        0 & 0 & 0 & \cdots & 0 \\
+        0 & 1 & 0 & \cdots & 0 \\
+        0 & 0 & 1 & \cdots & 0 \\
+        \vdots & \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & 0 & \cdots & 1
+    \end{bmatrix} \right)^{-1} \vect{X}\vec{y}
+\end{equation}
+finds the $\vec{\theta}$ that minimises the cost function $J(\vec{\theta})$. Note that the matrix that is being multiplied by $\lambda$ is the $\mathbb{R}^{n+1}$ identity
+matrix except the $I_{1,1}$ entry is $0$ instead of $1$.
+
+\subsection{Gradient Descent for Regularised Linear Regression}
+We also need to change the $\vec{\nabla}J(\vec{\theta})$ we use in our gradient descent algorithm if we choose to use regularised linear regression. The new gradient is given
+by
+\begin{align}
+    \vec{\nabla}_0 J(\vec{\theta}) &= \frac{1}{m} \sum_{i=1}^{m}\left[(h_{\theta}(\vecex{x}{i})-\vecex{y}{i})\right] \\
+    \vec{\nabla}_j J(\vec{\theta}) &= \frac{1}{m} \sum_{i=1}^{m}\left[(h_{\theta}(\vecex{x}{i})-\vecex{y}{i})\cdot\vecex{x}{i}_j\right] + \frac{\lambda}{m}\vec{\theta}_j \quad\quad \textrm{for } j \ne 0 \\
+    \vec{\nabla} J(\vec{\theta}) &= \frac{1}{m} \vect{X}(\vec{X\theta} - \vec{y}) + \frac{\lambda}{m}\begin{bmatrix}
+        0 \\ \vec{\theta}_1 \\ \vec{\theta}_2 \\ \vdots \\ \vec{\theta}_n
+    \end{bmatrix}
+\end{align}
+and we simply use these in our gradient descent algorithm instead of the previous versions.

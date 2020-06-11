@@ -1,0 +1,19 @@
+\section{Gradient Descent}
+
+\begin{algorithm}[H]
+    \SetAlgoLined
+
+    \KwIn{The number of iterations to run, $nIters$, and the initial values for the parameter vector, $thetaInit$.}
+    \KwOut{The optimised parameter vector.}
+
+    $n \gets 0$\;
+    $\theta \gets thetaInit$\;
+    \While{n $<$ nIters}{
+        $\theta \gets \theta - \alpha \nabla J(\theta)$
+        \tcp*{$J(\theta)$ is the cost function we are optimising against}
+        $n \gets n + 1$\;
+    }
+    \Return{$\theta$}
+
+    \caption{The gradient descent algorithm}
+\end{algorithm}
