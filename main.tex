@@ -3,7 +3,7 @@
 \usepackage[a4paper, margin=5em]{geometry}
 \usepackage{blindtext}
 \usepackage[ruled, vlined]{algorithm2e}
-\usepackage{amsmath, amsfonts, amssymb, amsbsy, bm}
+\usepackage{amsmath, amsfonts, amssymb, amsbsy, bm, import, xifthen, pdfpages, transparent, listings}
 
 \title{Machine Learning Notes}
 \author{Sebastian Gaume}
@@ -18,12 +18,18 @@
 \newcommand{\vecex}[2]{\bm{#1}^{(#2)}}
 \newcommand{\transpose}{^{\intercal}}
 
+% Include a figure
+\newcommand{\incfig}[1]{
+    \def\svgwidth{\columnwidth}
+    \import{./figures/}{#1.pdf_tex}
+}
+
 \begin{document}
 
 \maketitle
 \tableofcontents
 
-\chapter{Algorithms}
+\chapter{Algorithms}\label{chpt:algorithms}
 
 \input{algorithms.tex}
 
@@ -34,5 +40,9 @@
 \chapter{Logistic Regression}
 
 \input{logisticRegression.tex}
+
+\chapter{Neural Networks}
+
+\input{neuralNetworks.tex}
 
 \end{document}

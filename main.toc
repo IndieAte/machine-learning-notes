@@ -1,16 +1,24 @@
 \contentsline {chapter}{\numberline {1}Algorithms}{2}% 
 \contentsline {section}{\numberline {1.1}Gradient Descent}{2}% 
-\contentsline {chapter}{\numberline {2}Linear Regression}{3}% 
-\contentsline {section}{\numberline {2.1}Hypothesis and Cost Function}{3}% 
-\contentsline {section}{\numberline {2.2}The Normal Equation}{3}% 
-\contentsline {section}{\numberline {2.3}Gradient Descent}{3}% 
-\contentsline {section}{\numberline {2.4}Regularised Linear Regression}{3}% 
-\contentsline {subsection}{\numberline {2.4.1}The Normal Equation for Regularised Linear Regression}{4}% 
-\contentsline {subsection}{\numberline {2.4.2}Gradient Descent for Regularised Linear Regression}{4}% 
-\contentsline {chapter}{\numberline {3}Logistic Regression}{5}% 
-\contentsline {section}{\numberline {3.1}Hypothesis and Cost Function}{5}% 
-\contentsline {section}{\numberline {3.2}Decision Boundaries}{5}% 
-\contentsline {section}{\numberline {3.3}Multi-Class Problems}{5}% 
-\contentsline {section}{\numberline {3.4}Gradient Descent}{6}% 
-\contentsline {section}{\numberline {3.5}Regularised Logistic Regression}{6}% 
-\contentsline {subsection}{\numberline {3.5.1}Gradient Descent for Regularised Logistic Regression}{6}% 
+\contentsline {section}{\numberline {1.2}Advanced Optimisation Algorithms}{2}% 
+\contentsline {section}{\numberline {1.3}Forwards Propogation}{3}% 
+\contentsline {section}{\numberline {1.4}Backwards Propogation}{4}% 
+\contentsline {chapter}{\numberline {2}Linear Regression}{5}% 
+\contentsline {section}{\numberline {2.1}Hypothesis and Cost Function}{5}% 
+\contentsline {section}{\numberline {2.2}The Normal Equation}{5}% 
+\contentsline {section}{\numberline {2.3}Gradient Descent}{5}% 
+\contentsline {section}{\numberline {2.4}Regularised Linear Regression}{5}% 
+\contentsline {subsection}{\numberline {2.4.1}The Normal Equation for Regularised Linear Regression}{6}% 
+\contentsline {subsection}{\numberline {2.4.2}Gradient Descent for Regularised Linear Regression}{6}% 
+\contentsline {chapter}{\numberline {3}Logistic Regression}{7}% 
+\contentsline {section}{\numberline {3.1}Hypothesis and Cost Function}{7}% 
+\contentsline {section}{\numberline {3.2}Decision Boundaries}{7}% 
+\contentsline {section}{\numberline {3.3}Multi-Class Problems}{7}% 
+\contentsline {section}{\numberline {3.4}Gradient Descent}{8}% 
+\contentsline {section}{\numberline {3.5}Regularised Logistic Regression}{8}% 
+\contentsline {subsection}{\numberline {3.5.1}Gradient Descent for Regularised Logistic Regression}{8}% 
+\contentsline {chapter}{\numberline {4}Neural Networks}{9}% 
+\contentsline {section}{\numberline {4.1}Neural Network Architecture}{9}% 
+\contentsline {section}{\numberline {4.2}Forwards Propogation}{9}% 
+\contentsline {section}{\numberline {4.3}Backwards Progpogation}{10}% 
+\contentsline {subsection}{\numberline {4.3.1}Matrix Unrolling}{11}% 

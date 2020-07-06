@@ -1,19 +1,147 @@
+This chapter will contain the overviews of various important algorithms, along with pseudocode and/or Octave implementations of them. It is intended to provide
+a quick reference to how we can implement the various algorithms and a reminder of what algorithmic options are available.
+
 \section{Gradient Descent}
 
+The most basic optimisation function, and the only one which is worth implementing yourself, is gradient descent. It works by evaluating the gradient of the cost
+function and then updating $\theta$ such that the cost function decreases with each iteration. It has one hyperparameter, $\alpha$ which is the `learning rate' of the
+algorithm. This controls how much we change $\theta$ each iteration and it's important to tune it correctly so as to converge to the optimum quickly while also avoiding
+changing $\theta$ by too much and overshooting, which could cause the value of the cost function to explode to infinity.
+
+\vspace{1em}
 \begin{algorithm}[H]
     \SetAlgoLined
 
     \KwIn{The number of iterations to run, $nIters$, and the initial values for the parameter vector, $thetaInit$.}
     \KwOut{The optimised parameter vector.}
 
-    $n \gets 0$\;
-    $\theta \gets thetaInit$\;
+    $n \gets 0$ \;
+    $\theta \gets thetaInit$ \;
     \While{n $<$ nIters}{
         $\theta \gets \theta - \alpha \nabla J(\theta)$
         \tcp*{$J(\theta)$ is the cost function we are optimising against}
-        $n \gets n + 1$\;
+        $n \gets n + 1$ \;
     }
     \Return{$\theta$}
 
     \caption{The gradient descent algorithm}
+\end{algorithm}
+
+\section{Advanced Optimisation Algorithms}
+
+There are better optimisation algorithms than gradient descent, however these are mostly so complicated and optimised that a good implementation is difficult
+to write from scratch, and best left to specialists in numerical computing. As such, they should be imported in libraries or are available as built in functions
+in scientific programming languages such as Octave. For the most part, you ought to google the implementations of whichever libraries are the best for whatever
+language you're working in, however I will provide an overview for using one such function in Octave, as it is easy to use and demonstrates the general parameters
+you will need to pass to one of these advanced optimisation algorithms.
+
+\vspace{1em}
+
+The Octave built-in optimisation function is `fminunc', and it requires you to define a function which will return the cost J and the gradient grad for a given
+feature matrix X, target vector y and current parameter vector theta. It may also take other parameters, such as lambda for regularized cost functions.
+
+\begin{lstlisting}[language=Octave]
+function theta = optimiseTheta (X, y, lambda, maxIters)
+    % Initialise theta with the correct dimensions as all zeros
+    intialTheta = zeros(size(X, 2), 1);
+
+    % Create a cost function object to pass to fminunc, costFunction most return
+    % the cost, J, and the gradient, grad, in that order.
+    % The @(t) allows fminunc to pass the current theta to costFunction each
+    % iteration
+    costFunctionObject = @(t) costFunction(X, y, t, lambda);
+
+    % Set the options for fminunc
+    options = optimset('MaxIter', maxIters, 'GradObj', 'on');
+
+    % Optimise theta and then return it
+    theta = fminunc(costFunctionObject, initialTheta, options);
+end
+\end{lstlisting}
+
+This function will return the optimised theta for any given combination of X, y and lambda, assuming the feature matrix has been correctly constructed. These
+algorithms can always be substituted in for gradient descent and should be more efficient, especially as the number of features and training examples increase.
+
+\section{Forwards Propogation}
+
+Forwards propogation is the process by which a neural network calculates the hypothesis for a given feature vector $\vec{x}$. It's very simple to implement
+although it does require an implementation of the element-wise sigmoid function $g(\vec{z})$.
+
+\vspace{1em}
+\begin{algorithm}[H]
+    \SetAlgoLined
+
+    \KwIn{The feature vector $\vec{x}$, and the set of weight matrices $\vec{\Theta^{(i)}}$ for $i \in \{1, 2, ..., L - 1\}$ where $L$ is the number of layers in the network.}
+    \KwOut{The hypothesis vector $\vec{h_{\Theta}}(\vec{x})$.}
+
+    $\vec{a^{(1)}} \gets \vec{x}$ \;
+    $i \gets 2$ \;
+    \While{i $\le$ L}{
+        $\vec{z^{(i)}} \gets \vec{\Theta^{(i-1)}} \vec{a^{(i-1)}}$ \;
+        $\vec{a^{(i)}} \gets g(\vec{z^{(i)}})$
+        \tcp*{$g(\vec{z})$ is the element-wise sigmoid function}
+        $i \gets i + 1$ \;
+    }
+    \Return{$\vec{a^{(L)}}$}
+
+    \caption{The forwards propogation algorithm}
+\end{algorithm}
+
+\newpage
+\section{Backwards Propogation}
+
+Backwards propogation is the process by which we calculate the partial derivatives of the cost function. It's difficult to understand, but not too difficult to
+implement once the derivative of the sigmoid function, $g'(\vec{z})$, has been implemented.
+
+\vspace{1em}
+\begin{algorithm}[H]
+    \SetAlgoLined
+
+    \KwIn{The feature vectors $\vec{x^{(i)}}$, the target vectors $\vec{y^{(i)}}$ for $i \in \{1, 2, ..., m\}$, the regularization parameter $\lambda$ and the $\vecex{\Theta}{i}$ weight matrices for $i \in \{1, 2, ..., L-1\}$.}
+    \KwOut{The parital derivative matrices $\vec{D^{(i)}}$ for $i \in \{1, 2, ..., L-1\}$.}
+
+    $i \gets 1$ \;
+    \While{$i < L$}{
+        $\vec{\Delta^{(i)}}$ = zeros($s_{i+1}$, $s_i + 1$) \;
+        $i \gets i + 1$ \;
+    }
+    $i \gets 1$ \;
+    \While{$i \le m$}{
+        $\vecex{a}{1} \gets \vecex{x}{i}$ \;
+        Carry out forwards propogation to compute $\vecex{a}{l}$ for $l \in \{2,3,...,L\}$
+        \tcp*{We also need to make sure to calculate the $\vecex{z}{l}$ values}
+        $\vecex{\delta}{L} = \vecex{a}{L} - \vecex{y}{i}$ \;
+        $l \gets L-1 $ \;
+        \While{$l > 0$}{
+            $\vecex{\delta}{l} \gets \big(\vecex{\Theta}{l}\big)\transpose\vecex{\delta}{l+1}\hspace{0.2em}\cdot^*\hspace{0.2em}g'(\vecex{z}{l})$
+            \tcp*{$g'(\vec{z})$ is the derivative of the element-wise sigmoid function}
+            $\vecex{\Delta}{l} \gets \vecex{\Delta}{l} + \vecex{\delta}{l+1}\big(\vecex{a}{l}\big)\transpose$ \;
+            $l \gets l-1$ \;
+        }
+        $i \gets i + 1$
+    }
+
+    $l \gets 1$ \;
+    \While{$l < L$}{
+        $i \gets 0$ \;
+        \While{$i \le s_{l+1}$}{
+            $j \gets 0$ \;
+            \While{$j \le s_l + 1$}{
+                \If{$j = 0$}{
+                    $\vecex{D}{l}_{ij} = \frac{1}{m}\vecex{\Delta}{l}_{ij}$ \;
+                }\Else{
+                    $\vecex{D}{l}_{ij} = \frac{1}{m}\vecex{\Delta}{l}_{ij} + \lambda \vecex{\Theta}{l}_{ij}$ \;
+                }
+                $j \gets j + 1$ \;
+            }
+            $i \gets i + 1$ \;
+        }
+        $l \gets l + 1$ \;
+    }
+
+    Unwrap the $\vec{D}$ matrices into dVec \;
+
+    \Return{dVec}
+
+    \caption{The backwards propogation algorithm}
 \end{algorithm}

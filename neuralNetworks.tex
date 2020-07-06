@@ -1,0 +1,123 @@
+A neural network is a kind of machine learning model which is designed to imitate the connections between neurons in the human brain.
+It can be used in complex classification problems, as it takes in a set of features and then trains itself to recognise more features
+from these features, giving it access to complicated features we probably wouldn't have thought to design.
+
+\section{Neural Network Architecture}
+\begin{figure}[ht]
+    \centering
+    \scalebox{0.4}{
+        \incfig{neural-network-one}
+    }
+    \caption{A basic neural network}
+    \label{fig:neural-network-one}
+\end{figure}
+
+A neural network is comprised of layers of activation units, which are connected to each other by a set of biases, which are the learned parameters
+of a neural network model. There are three main varieties of layers, the input layer, the hidden layers and the output layer. The input layer is
+effectively just another representation of the feature vector $\vec{x}$ and the ouput layer is just another representation of our hypothesis,
+$h_{\vec{\Theta}}(\vec{x})$. This leaves the hidden layers, which are effectively intermediary features which the model learns from the input features.
+A typical network might have one hidden layer, but you can add more to allow the network to learn more complex features.
+
+\vspace{1em}
+
+The input layer is given the layer number $1$, and the output layer is dependant on the number of hidden layers, but can be referred to as $L$.
+Furthermore, we can refer to the $n^{\textit{th}}$ activation unit in layer $l$ with the notation $a^{(l)}_n$. Note that these then form the vector $\vec{a^{(l)}}$
+which refers to all of the activation units in layer $l$. Each layer also has a bias unit, $a^{(l)}_0$ which is always equal to $1$. This means that
+$\vec{a^{(1)}} = \vec{x}$, so the $a$ notation is somewhat redundant for the input layer, though it does unify the notation.
+The notation $s_l$ refers to the number of activation units in a given layer $l$, excluding the bias unit. Finally, we can refer to the matrix of weights
+that maps layer $i$ to layer $i + 1$ as $\vec{\Theta^{(i)}}$ where  $\vec{\Theta^{(i)}} \in \mathbb{R}^{(s_{i+1}) \times (s_i + 1)}$.
+With this notation established, we now have all we need to allow us to make use of neural networks.
+
+\section{Forwards Propogation}
+
+The first thing we need to understand to use neural networks for machine learning is how a pre-trained neural network calculates values for the hypothesis
+given a feature vector $\vec{x}$. For each layer in a trained neural network, except the input layer, we will have a weights matrix $\vec{\Theta}$ which
+allows us to move from one layer to the next. As such, we can't jump from the input layer to the output layer in one step, and we instead need to propogate
+values forwards between layers until we eventually reach the output layer. The general formula for moving from one layer to the next is
+\begin{equation}
+    \vec{a^{(n)}} = g(\vec{\Theta^{(n-1)}} \vec{a^{(n-1)}})
+\end{equation}
+
+which we can simplify to
+\begin{equation}
+    \vec{a^{(n)}} = g(\vec{z^{(2)}})
+\end{equation}
+
+by defining
+\begin{equation}
+    \vec{z^{(n)}} = \vec{\Theta^{(n-1)}} \vec{a^{(n-1)}}.
+\end{equation}
+
+Note that as before, $g(\vec{z})$ is the element-wise sigmoid function. A full algorithmic description of the process of forwards propogation is in Chapter
+\ref{chpt:algorithms}, on algorithms, however this describes the maths behind the process, and you simply feed the values forwards until you reach the output
+layer, at which point the vector of activation units is the same as the vector of hypotheses for different classes - more notes on multi-class classification
+in a later section of this chapter.
+
+\section{Backwards Progpogation}
+
+Now that we know how to use a trained neural network, we need to learn how to train our own neural networks. Whenever we've trained a model before, we've
+determined an expression for the cost function, $J(\vec{\theta})$, and the gradient of the cost function, $\vec{\nabla} J(\vec{\theta})$, which we can compute
+for whatever our $\vec{\theta}$ currently is and then pass to our optimisation algorithm, however a neural network poses a new challenge in computing these
+values.
+
+\vspace{1em}
+
+The cost function, $J(\vec{\Theta})$, is easy enough to compute, since we just need to have the value of our hypothesis for our given feature vector which we
+know how to calculate using forwards propogation. It can be written\begin{align}
+    J(\vec{\Theta}) = &- \frac{1}{m} \sum^{m}_{i=1}\sum^{K}_{k=1} \left( y^{(i)}_k \log{\left(h_{\Theta}(x^{(i)})_k\right)} + \left(1 - y^{(i)}_k\right) \log{\left(1-h_{\Theta}(x^{(i)})_k\right)} \right) \\
+    &\quad\hdots\quad + \frac{\lambda}{2m} \sum^{L-1}_{l=1} \sum^{s_l}_{i=1}\sum^{s_{l+1}}_{j=1} \left(\Theta^{(l)}_{ji}\right)^2 \nonumber
+\end{align}
+
+which includes regularization. Note that we don't regularize the weights that map from the bias units.
+The problem is computing the gradient of the cost function, $\vec{\nabla} J(\vec{\Theta})$, since we need to compute
+\begin{equation}
+    \frac{\partial}{\partial \Theta^{(l)}_{ij}} J(\vec{\Theta}) = D^{(l)}_{ij}
+\end{equation}
+
+for every $l, i \textrm{ and } j$. Note that $\Theta^{(l)}_{ij}$ is the weight going from $a^{(l-1)}_j$ to $a^{(l)}_i$. This means that we need to work out the
+partial derivatives of the cost function with respect to each and every connection between activation units. Furthermore, because each layer only acts on the output
+of the layer before it, once again we cant work out a lot of these partial derivatives directly, and we instead need to work our way backwards through the network,
+propogating the `errors' of each layer backwards to work out our partial derivatives.
+
+\vspace{1em}
+
+To work this out, we're going to define some new values $\delta^{(l)}_i$, which is the `error' of node $i$ in layer $l$ and can be written as a vector $\vec{\delta^{(l)}}$.
+The first of these, $\delta^{L}$ is calculated fairly simply, by comparing the hypothesis to the target vector using the following equation:
+\begin{equation}
+    \vec{\delta^{(L)}} = \vec{a^{4}} - \vec{y}.
+\end{equation}
+The subsequent values are then calculated according to the same general formula
+\begin{equation}
+    \vec{\delta^{(l)}} = \big(\vec{\Theta^{(l)}}\big)\transpose \vec{\delta^{(l+1)}} \hspace{0.2em}\cdot^*\hspace{0.2em} g'(\vec{z^{(l)}})
+\end{equation}
+where we define the $\cdot^*$ operator to be the element-wise multiplication of two vectors and $g'(\vec{z})$ is the derivative of the sigmoid function, which can be
+calculated using
+\begin{equation}
+    g'(\vec{z^{(n)}}) = \vec{a^{(n)}} \hspace{0.2em}\cdot^*\hspace{0.2em} \left(\begin{bmatrix}
+        1 \\ 1 \\ \vdots \\ 1
+    \end{bmatrix} - \vec{a^{(n)}}\right).
+\end{equation}
+
+Once the $\vec{\delta}$ vectors have been calculated, we can quite simply calculate the partial derivative terms by using
+\begin{equation}
+    \frac{\partial}{\partial \Theta^{(l)}_{ij}} J(\vec{\Theta}) = a^{(l)}_j \delta^{(l+1)}_i = D^{(l)}_{ij}.
+\end{equation}
+An algorithmic approach to calculating these partial derivatives can be found in Chapter \ref{chpt:algorithms}.
+
+\subsection{Matrix Unrolling}
+
+Most optimisation algorithms will expect $\vec{\Theta}$ and the partial derivatives to be in the form of vectors rather than matrices.
+To convert between the matrices that they exist as normally and vector representations, we can `unroll' them. This means we write out
+each entry left to right first then top to bottom as a vector and do the inverse to convert back. In Octave, this can be done using
+the following example code:
+
+\begin{lstlisting}[language=Octave]
+% Unroll the Theta and D matrices into vectors
+thetaVec = [Theta1(:); Theta2(:); Theta3(:)];
+DVec = [D1(:); D2(:); D3(:)];
+
+% Reshape the vector into matrices
+Theta1 = reshape(thetaVec(1:110), 10, 11);
+\end{lstlisting}
+
+The documentation for the `reshape' function is available through the help function in Octave.
